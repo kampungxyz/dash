@@ -23,6 +23,7 @@
     var params = getSearchParameters();
     var i = params.i;
     var k = params.k;
+    var h = params.h;
 
     function init() {
         const protData = {
@@ -35,7 +36,7 @@
         };
         var video,
             player,
-            url = "https://example.com/output/stream.mpd";
+            url = "https://" + h;
  
         video = document.querySelector("video");
         player = dashjs.MediaPlayer().create();
