@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MPEG-DASH</title>
+    <!-- DASH reference implementation -->
+    <script src="https://cdn.dashjs.org/latest/dash.all.debug.js"></script>
+ 
+<script>
+    function getSearchParameters() {
+        var prmstr = window.location.search.substr(1);
+        return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
+    }
+    function transformToAssocArray( prmstr ) {
+        var params = {};
+        var prmarr = prmstr.split("&");
+        for ( var i = 0; i < prmarr.length; i++) {
+            var tmparr = prmarr[i].split("=");
+            params[tmparr[0]] = tmparr[1];
+        }
+        return params;
+    }
+
+    var params = getSearchParameters();
+    var i = params.i;
+    var k = params.k;
+
+    function init() {
+        const protData = {
+                "org.w3.clearkey": {
+                        "clearkeys": {
+                            i : k
+                        },
+                        "priority": 0
+                }
+        };
+        var video,
+            player,
+            url = "https://example.com/output/stream.mpd";
+ 
+        video = document.querySelector("video");
+        player = dashjs.MediaPlayer().create();
+        player.updateSettings({ 'debug': { 'logLevel': dashjs.Debug.LOG_LEVEL_DEBUG }});
+         
+        player.initialize(video, url, true);
+        player.setProtectionData(protData);
+         
+    }
+    function check() {
+        if (location.protocol === 'http:' && location.hostname !== 'localhost') {
+            var out = 'This page has been loaded under http. This might result in the EME APIs not being available to the player and any DRM-protected content will fail to play. ' +
+                'If you wish to test manifest URLs that require EME support, then <a href=\'https:' + window.location.href.substring(window.location.protocol.length) + '\'>reload this page under https</a>.'
+            var div = document.getElementById('http-warning');
+            div.innerHTML = out;
+            div.style.display = ''
+        }
+    }
+</script>
+  </head>
+  <body onload="init()">
+    <video id="html5video" width="80%" height="80%" controls>
+    </video>
+  </body>
+</html>
