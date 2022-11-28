@@ -1,11 +1,28 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>MPEG-DASH</title>
-    <!-- DASH reference implementation -->
-    <script src="https://cdn.dashjs.org/latest/dash.all.debug.js"></script>
- 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Native MPEG-Dash with clearkey</title>
+    <style>
+        body { background-color: black; }
+        .jw-rightclick { display: none !important; }
+        .jwplayer .jwdisplayIcon { display: none !important; }
+    </style>
+    <script src="https://content.jwplatform.com/libraries/Z79JsmAO.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+    <video id="jwplayerDiv" width="80%" height="80%" controls>
+    </video>
+</body>
 <script>
+    jQuery(document).ready(function(){
+        jQuery(function() {
+                jQuery(this).bind("contextmenu", function(event) {
+                    event.preventDefault();
+                });
+            });
+    });
+
     function getSearchParameters() {
         var prmstr = window.location.search.substr(1);
         return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
@@ -19,46 +36,21 @@
         }
         return params;
     }
-
     var params = getSearchParameters();
     var i = params.i;
     var k = params.k;
     var h = params.h;
-
-    function init() {
-        const protData = {
-                "org.w3.clearkey": {
-                        "clearkeys": {
-                            i : k
-                        },
-                        "priority": 0
+    jwplayer("jwplayerDiv").setup({
+        file: "//" + h,
+            drm: {
+                clearkey: {
+                    key: k,
+                    keyId: i
                 }
-        };
-        var video,
-            player,
-            url = "https://" + h;
- 
-        video = document.querySelector("video");
-        player = dashjs.MediaPlayer().create();
-        player.updateSettings({ 'debug': { 'logLevel': dashjs.Debug.LOG_LEVEL_DEBUG }});
-         
-        player.initialize(video, url, true);
-        player.setProtectionData(protData);
-         
-    }
-    function check() {
-        if (location.protocol === 'http:' && location.hostname !== 'localhost') {
-            var out = 'This page has been loaded under http. This might result in the EME APIs not being available to the player and any DRM-protected content will fail to play. ' +
-                'If you wish to test manifest URLs that require EME support, then <a href=\'https:' + window.location.href.substring(window.location.protocol.length) + '\'>reload this page under https</a>.'
-            var div = document.getElementById('http-warning');
-            div.innerHTML = out;
-            div.style.display = ''
-        }
-    }
+            },
+            width: '100%',
+            height: '100%',
+            autostart: true
+    });
+    jwplayer().setVolume(50);
 </script>
-  </head>
-  <body onload="init()">
-    <video id="html5video" width="80%" height="80%" controls>
-    </video>
-  </body>
-</html>
